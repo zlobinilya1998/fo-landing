@@ -99,48 +99,51 @@
                             <video :ref="`video-`+index" class="videoSlide" :src="videoSlide.path" muted loop>
                                 <source src="../public/video/ocean.mp4" type="video/mp4">
                             </video>
-                            <div v-if="videoSwiper" class="video-controllers">
-                                <div v-if="!isStart" class="video-btn prev" @click="prevVideoSlide" >
-                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clipDVQWECASdacsds)">
-                                            <path d="M2.63288 5.33237L7.46847 0.503978C7.64655 0.316079 7.86892 0.222168 8.13603 0.222168C8.40313 0.222168 8.6255 0.316183 8.80358 0.503978L9.36726 1.06033C9.55025 1.24329 9.64174 1.46569 9.64174 1.72776C9.64174 1.98486 9.55027 2.20991 9.36726 2.40269L5.76272 5.99996L9.36741 9.60463C9.55035 9.78759 9.64185 10.01 9.64185 10.2721C9.64185 10.5292 9.55038 10.7543 9.36741 10.947L8.80369 11.5033C8.62072 11.6862 8.39812 11.7777 8.13613 11.7777C7.87404 11.7777 7.65148 11.6862 7.46857 11.5033L2.63288 6.67487C2.44983 6.48203 2.35826 6.25704 2.35826 5.99993C2.35823 5.73787 2.44983 5.51534 2.63288 5.33237Z" fill="white"/>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clipDVQWECASdacsds">
-                                                <rect width="11.5556" height="11.5556" fill="white" transform="matrix(-1 0 0 1 11.7778 0.222168)"/>
-                                            </clipPath>
-                                        </defs>
-                                    </svg>
-                                </div>
-                                <div v-if="videoSliderData[index].paused"  class="video-btn play" @click="videoController(index)">
-                                    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M2.875 4.2028C2.875 1.95021 5.34797 0.572629 7.26327 1.75829L19.0512 9.05556C20.8668 10.1795 20.8668 12.8206 19.0512 13.9446L7.26327 21.2419C5.34797 22.4275 2.875 21.0499 2.875 18.7973V4.2028Z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div v-else class="video-btn stop" @click="videoController(index)">
-                                    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1.91675 3.83342C1.91675 2.77487 2.77487 1.91675 3.83341 1.91675H7.66675C8.72529 1.91675 9.58341 2.77487 9.58341 3.83342V19.1668C9.58341 20.2253 8.72529 21.0834 7.66675 21.0834H3.83341C2.77487 21.0834 1.91675 20.2253 1.91675 19.1668V3.83342Z" fill="white"/>
-                                        <path d="M13.4167 3.83342C13.4167 2.77487 14.2749 1.91675 15.3334 1.91675H19.1668C20.2253 1.91675 21.0834 2.77487 21.0834 3.83342V19.1668C21.0834 20.2253 20.2253 21.0834 19.1668 21.0834H15.3334C14.2749 21.0834 13.4167 20.2253 13.4167 19.1668V3.83342Z" fill="white"/>
-                                    </svg>
-                                </div>
-                                <div v-if="!isEnd" class="video-btn next"  @click="nextVideoSlide" >
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clipdbadsc1323123)">
-                                                <path d="M9.36688 5.33237L4.53129 0.503978C4.35321 0.316079 4.13084 0.222168 3.86373 0.222168C3.59662 0.222168 3.37425 0.316183 3.19617 0.503978L2.6325 1.06033C2.44951 1.24329 2.35801 1.46569 2.35801 1.72776C2.35801 1.98486 2.44948 2.20991 2.6325 2.40269L6.23704 5.99996L2.63234 9.60463C2.44941 9.78759 2.35791 10.01 2.35791 10.2721C2.35791 10.5292 2.44938 10.7543 2.63234 10.947L3.19607 11.5033C3.37903 11.6862 3.60164 11.7777 3.86363 11.7777C4.12572 11.7777 4.34827 11.6862 4.53119 11.5033L9.36688 6.67487C9.54992 6.48203 9.6415 6.25704 9.6415 5.99993C9.64152 5.73787 9.54992 5.51534 9.36688 5.33237Z" fill="white"/>
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clipdbadsc1323123">
-                                                    <rect width="11.5556" height="11.5556" fill="white" transform="translate(0.222168 0.222168)"/>
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                <vue-ellipse-progress v-if="videoSlide.curTime" :progress="videoSlide.curTime" :legend="false" :reverse="true" color="#3790F5" emptyColor="none"  :size=65 animation="default 0 0" :style="{position:'absolute',bottom:'-10',left:'50%',transform:'translateX(-50%',zIndex:'-1'}" line="round">
-                                </vue-ellipse-progress>
-                            </div>
-
                         </swiper-slide>
                     </swiper>
+                    <div v-if="videoSwiper" class="video-controllers">
+                        <transition name="fade">
+                            <div v-if="!isStart" class="video-btn prev" @click="prevVideoSlide" >
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clipDVQWECASdacsds)">
+                                        <path d="M2.63288 5.33237L7.46847 0.503978C7.64655 0.316079 7.86892 0.222168 8.13603 0.222168C8.40313 0.222168 8.6255 0.316183 8.80358 0.503978L9.36726 1.06033C9.55025 1.24329 9.64174 1.46569 9.64174 1.72776C9.64174 1.98486 9.55027 2.20991 9.36726 2.40269L5.76272 5.99996L9.36741 9.60463C9.55035 9.78759 9.64185 10.01 9.64185 10.2721C9.64185 10.5292 9.55038 10.7543 9.36741 10.947L8.80369 11.5033C8.62072 11.6862 8.39812 11.7777 8.13613 11.7777C7.87404 11.7777 7.65148 11.6862 7.46857 11.5033L2.63288 6.67487C2.44983 6.48203 2.35826 6.25704 2.35826 5.99993C2.35823 5.73787 2.44983 5.51534 2.63288 5.33237Z" fill="white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clipDVQWECASdacsds">
+                                            <rect width="11.5556" height="11.5556" fill="white" transform="matrix(-1 0 0 1 11.7778 0.222168)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </transition>
+                        <transition name="fade">
+                            <div v-if="!isEnd" class="video-btn next"  @click="nextVideoSlide" >
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clipdbadsc1323123)">
+                                        <path d="M9.36688 5.33237L4.53129 0.503978C4.35321 0.316079 4.13084 0.222168 3.86373 0.222168C3.59662 0.222168 3.37425 0.316183 3.19617 0.503978L2.6325 1.06033C2.44951 1.24329 2.35801 1.46569 2.35801 1.72776C2.35801 1.98486 2.44948 2.20991 2.6325 2.40269L6.23704 5.99996L2.63234 9.60463C2.44941 9.78759 2.35791 10.01 2.35791 10.2721C2.35791 10.5292 2.44938 10.7543 2.63234 10.947L3.19607 11.5033C3.37903 11.6862 3.60164 11.7777 3.86363 11.7777C4.12572 11.7777 4.34827 11.6862 4.53119 11.5033L9.36688 6.67487C9.54992 6.48203 9.6415 6.25704 9.6415 5.99993C9.64152 5.73787 9.54992 5.51534 9.36688 5.33237Z" fill="white"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clipdbadsc1323123">
+                                            <rect width="11.5556" height="11.5556" fill="white" transform="translate(0.222168 0.222168)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                        </transition>
+                        <div v-if="videoSliderData[currentVideoSlide].paused"  class="video-btn play" @click="videoController(currentVideoSlide)">
+                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.875 4.2028C2.875 1.95021 5.34797 0.572629 7.26327 1.75829L19.0512 9.05556C20.8668 10.1795 20.8668 12.8206 19.0512 13.9446L7.26327 21.2419C5.34797 22.4275 2.875 21.0499 2.875 18.7973V4.2028Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div v-else class="video-btn stop" @click="videoController(currentVideoSlide)">
+                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.91675 3.83342C1.91675 2.77487 2.77487 1.91675 3.83341 1.91675H7.66675C8.72529 1.91675 9.58341 2.77487 9.58341 3.83342V19.1668C9.58341 20.2253 8.72529 21.0834 7.66675 21.0834H3.83341C2.77487 21.0834 1.91675 20.2253 1.91675 19.1668V3.83342Z" fill="white"/>
+                                <path d="M13.4167 3.83342C13.4167 2.77487 14.2749 1.91675 15.3334 1.91675H19.1668C20.2253 1.91675 21.0834 2.77487 21.0834 3.83342V19.1668C21.0834 20.2253 20.2253 21.0834 19.1668 21.0834H15.3334C14.2749 21.0834 13.4167 20.2253 13.4167 19.1668V3.83342Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <vue-ellipse-progress v-if="videoSliderData[currentVideoSlide].curTime" :progress="videoSliderData[currentVideoSlide].curTime" :legend="false" :reverse="true" color="#3790F5" emptyColor="none"  :size=65 animation="default 0 0" :style="{position:'absolute',bottom:'-10',left:'50%',transform:'translateX(-50%',zIndex:'-1'}" line="round">
+                        </vue-ellipse-progress>
+                    </div>
                     <div class="video-layer first"></div>
                     <div class="video-layer second"></div>
                 </div>
@@ -308,6 +311,9 @@
             isEnd(){
                 return this.videoSwiper.isEnd;
             },
+            currentVideoSlide(){
+                return this.videoSwiper.activeIndex
+            }
         },
         components: {
             Swiper,
