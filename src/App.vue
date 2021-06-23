@@ -38,17 +38,33 @@
                     </div>
                     <div class="models-right">
                         <p class="models-right-text first">акция  -99%</p>
-                        <p class="models-right-text second">15 мин. 45 сек</p>
+                        <p class="models-right-text second timer">15 мин. 45 сек</p>
                     </div>
                 </div>
             </div>
             <div class="item-wrapper">
-
                 <div v-for="(item,index) in items" :key="index" class="item">
                     <swiper ref="mySwiper" :options="swiperOption">
-                        <swiper-slide v-for="(video,index) in item.videos" :key="index">
+                        <swiper-slide v-for="(photo,index) in item.photos" :key="index">
                             <div class="slider-item">
-                                <img class="slider-img" :src="video" alt="das">
+                                <img class="slider-img" :src="photo" alt="das">
+                            </div>
+                        </swiper-slide>
+                        <swiper-slide >
+                            <div class="slider-item" @click="showPopup = true">
+                                <img class="slider-img" :src="item.photos[0]" alt="das">
+                                <div class="blur">
+                                    <div class="item-btn" :style="{margin:'auto',width:'106px',height:'36px',fontSize:'10px',fontWeight:'600',borderRadius:'8px'}">Открыть доступ</div>
+                                </div>
+                            </div>
+                        </swiper-slide>
+                        <swiper-slide>
+                            <div class="slider-item" @click="showPopup = true">
+                                <img class="slider-img" :src="item.photos[1]" alt="das">
+                                <div class="blur" :style="{background: `rgba(0, 0, 0, 0.8)`,flexDirection:'column'}">
+                                    <p :style="{fontSize: '40px',lineHeight:'48px',fontWeight: 'bold'}">+56</p>
+                                    <p :style="{fontSize: '15px',lineHeight:'18px',fontWeight: '500'}">фото</p>
+                                </div>
                             </div>
                         </swiper-slide>
                     </swiper>
@@ -78,54 +94,57 @@
                     <h3 class="best-videos-title">Лучшие видео</h3>
                 </div>
                 <div class="video">
-                    <video id="myVideo" ref="video" src="../public/video/ocean.mp4" autoplay loop muted>
-                        <source src="../public/video/ocean.mp4" type="video/mp4">
-                    </video>
+                    <swiper @slideChange="videoSlideChange" :options="videoSwiperOptions" class="videoSwiper" ref="videoSwiper" :style="{overflow:'hidden',borderRadius: '20px'}" >
+                        <swiper-slide v-for="(videoSlide,index) of videoSliderData" :key="index" class="video-slide">
+                            <video :ref="`video-`+index" class="videoSlide" :src="videoSlide.path" muted loop>
+                                <source src="../public/video/ocean.mp4" type="video/mp4">
+                            </video>
+                            <div v-if="videoSwiper" class="video-controllers">
+                                <div v-if="!isStart" class="video-btn prev" @click="prevVideoSlide" >
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clipDVQWECASdacsds)">
+                                            <path d="M2.63288 5.33237L7.46847 0.503978C7.64655 0.316079 7.86892 0.222168 8.13603 0.222168C8.40313 0.222168 8.6255 0.316183 8.80358 0.503978L9.36726 1.06033C9.55025 1.24329 9.64174 1.46569 9.64174 1.72776C9.64174 1.98486 9.55027 2.20991 9.36726 2.40269L5.76272 5.99996L9.36741 9.60463C9.55035 9.78759 9.64185 10.01 9.64185 10.2721C9.64185 10.5292 9.55038 10.7543 9.36741 10.947L8.80369 11.5033C8.62072 11.6862 8.39812 11.7777 8.13613 11.7777C7.87404 11.7777 7.65148 11.6862 7.46857 11.5033L2.63288 6.67487C2.44983 6.48203 2.35826 6.25704 2.35826 5.99993C2.35823 5.73787 2.44983 5.51534 2.63288 5.33237Z" fill="white"/>
+                                        </g>
+                                        <defs>
+                                            <clipPath id="clipDVQWECASdacsds">
+                                                <rect width="11.5556" height="11.5556" fill="white" transform="matrix(-1 0 0 1 11.7778 0.222168)"/>
+                                            </clipPath>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div v-if="videoSliderData[index].paused"  class="video-btn play" @click="videoController(index)">
+                                    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.875 4.2028C2.875 1.95021 5.34797 0.572629 7.26327 1.75829L19.0512 9.05556C20.8668 10.1795 20.8668 12.8206 19.0512 13.9446L7.26327 21.2419C5.34797 22.4275 2.875 21.0499 2.875 18.7973V4.2028Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div v-else class="video-btn stop" @click="videoController(index)">
+                                    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.91675 3.83342C1.91675 2.77487 2.77487 1.91675 3.83341 1.91675H7.66675C8.72529 1.91675 9.58341 2.77487 9.58341 3.83342V19.1668C9.58341 20.2253 8.72529 21.0834 7.66675 21.0834H3.83341C2.77487 21.0834 1.91675 20.2253 1.91675 19.1668V3.83342Z" fill="white"/>
+                                        <path d="M13.4167 3.83342C13.4167 2.77487 14.2749 1.91675 15.3334 1.91675H19.1668C20.2253 1.91675 21.0834 2.77487 21.0834 3.83342V19.1668C21.0834 20.2253 20.2253 21.0834 19.1668 21.0834H15.3334C14.2749 21.0834 13.4167 20.2253 13.4167 19.1668V3.83342Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <div v-if="!isEnd" class="video-btn next"  @click="nextVideoSlide" >
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <g clip-path="url(#clipdbadsc1323123)">
+                                                <path d="M9.36688 5.33237L4.53129 0.503978C4.35321 0.316079 4.13084 0.222168 3.86373 0.222168C3.59662 0.222168 3.37425 0.316183 3.19617 0.503978L2.6325 1.06033C2.44951 1.24329 2.35801 1.46569 2.35801 1.72776C2.35801 1.98486 2.44948 2.20991 2.6325 2.40269L6.23704 5.99996L2.63234 9.60463C2.44941 9.78759 2.35791 10.01 2.35791 10.2721C2.35791 10.5292 2.44938 10.7543 2.63234 10.947L3.19607 11.5033C3.37903 11.6862 3.60164 11.7777 3.86363 11.7777C4.12572 11.7777 4.34827 11.6862 4.53119 11.5033L9.36688 6.67487C9.54992 6.48203 9.6415 6.25704 9.6415 5.99993C9.64152 5.73787 9.54992 5.51534 9.36688 5.33237Z" fill="white"/>
+                                            </g>
+                                            <defs>
+                                                <clipPath id="clipdbadsc1323123">
+                                                    <rect width="11.5556" height="11.5556" fill="white" transform="translate(0.222168 0.222168)"/>
+                                                </clipPath>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                <vue-ellipse-progress v-if="videoSlide.curTime" :progress="videoSlide.curTime" :legend="false" :reverse="true" color="#3790F5" emptyColor="none"  :size=65 animation="default 0 0" :style="{position:'absolute',bottom:'-10',left:'50%',transform:'translateX(-50%',zIndex:'-1'}" line="round">
+                                </vue-ellipse-progress>
+                            </div>
+
+                        </swiper-slide>
+                    </swiper>
                     <div class="video-layer first"></div>
                     <div class="video-layer second"></div>
-                    <div class="video-controllers">
-                        <div class="video-btn prev">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clipDVQWECASdacsds)">
-                                    <path d="M2.63288 5.33237L7.46847 0.503978C7.64655 0.316079 7.86892 0.222168 8.13603 0.222168C8.40313 0.222168 8.6255 0.316183 8.80358 0.503978L9.36726 1.06033C9.55025 1.24329 9.64174 1.46569 9.64174 1.72776C9.64174 1.98486 9.55027 2.20991 9.36726 2.40269L5.76272 5.99996L9.36741 9.60463C9.55035 9.78759 9.64185 10.01 9.64185 10.2721C9.64185 10.5292 9.55038 10.7543 9.36741 10.947L8.80369 11.5033C8.62072 11.6862 8.39812 11.7777 8.13613 11.7777C7.87404 11.7777 7.65148 11.6862 7.46857 11.5033L2.63288 6.67487C2.44983 6.48203 2.35826 6.25704 2.35826 5.99993C2.35823 5.73787 2.44983 5.51534 2.63288 5.33237Z" fill="white"/>
-                                </g>
-                                <defs>
-                                    <clipPath id="clipDVQWECASdacsds">
-                                        <rect width="11.5556" height="11.5556" fill="white" transform="matrix(-1 0 0 1 11.7778 0.222168)"/>
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </div>
-                        <div v-if="!videoPaused" class="video-btn play" @click="videoController">
-                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.875 4.2028C2.875 1.95021 5.34797 0.572629 7.26327 1.75829L19.0512 9.05556C20.8668 10.1795 20.8668 12.8206 19.0512 13.9446L7.26327 21.2419C5.34797 22.4275 2.875 21.0499 2.875 18.7973V4.2028Z" fill="white"/>
-                            </svg>
-                        </div>
-                        <div v-else class="video-btn stop" @click="videoController">
-                            <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1.91675 3.83342C1.91675 2.77487 2.77487 1.91675 3.83341 1.91675H7.66675C8.72529 1.91675 9.58341 2.77487 9.58341 3.83342V19.1668C9.58341 20.2253 8.72529 21.0834 7.66675 21.0834H3.83341C2.77487 21.0834 1.91675 20.2253 1.91675 19.1668V3.83342Z" fill="white"/>
-                                <path d="M13.4167 3.83342C13.4167 2.77487 14.2749 1.91675 15.3334 1.91675H19.1668C20.2253 1.91675 21.0834 2.77487 21.0834 3.83342V19.1668C21.0834 20.2253 20.2253 21.0834 19.1668 21.0834H15.3334C14.2749 21.0834 13.4167 20.2253 13.4167 19.1668V3.83342Z" fill="white"/>
-                            </svg>
-                        </div>
-                        <div class="video-btn next">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clipdbadsc1323123)">
-                                    <path d="M9.36688 5.33237L4.53129 0.503978C4.35321 0.316079 4.13084 0.222168 3.86373 0.222168C3.59662 0.222168 3.37425 0.316183 3.19617 0.503978L2.6325 1.06033C2.44951 1.24329 2.35801 1.46569 2.35801 1.72776C2.35801 1.98486 2.44948 2.20991 2.6325 2.40269L6.23704 5.99996L2.63234 9.60463C2.44941 9.78759 2.35791 10.01 2.35791 10.2721C2.35791 10.5292 2.44938 10.7543 2.63234 10.947L3.19607 11.5033C3.37903 11.6862 3.60164 11.7777 3.86363 11.7777C4.12572 11.7777 4.34827 11.6862 4.53119 11.5033L9.36688 6.67487C9.54992 6.48203 9.6415 6.25704 9.6415 5.99993C9.64152 5.73787 9.54992 5.51534 9.36688 5.33237Z" fill="white"/>
-                                </g>
-                                <defs>
-                                    <clipPath id="clipdbadsc1323123">
-                                        <rect width="11.5556" height="11.5556" fill="white" transform="translate(0.222168 0.222168)"/>
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </div>
-                    </div>
-                    <svg viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="60" cy="60" r="50"/>
-                    </svg>
                 </div>
             </div>
-
             <div class="howToEarn">
                 <div class="howToEarn-logo-wrapper">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -168,13 +187,12 @@
                     <p class="popup-title">Для новых пользователей</p>
                     <p class="popup-text">Подписка на одну из этих 5</p>
                     <p class="popup-text">ТОП-моделей всего за 1 ₽ вместо  <span :style="{textDecoration:'line-through'}">500 ₽</span></p>
-                    <div :style="{margin:'20px 24px'}" class="item-btn">Выбрать</div>
-                    <p class="popup-timer">осталось 15 мин. 45 сек</p>
+                    <div :style="{margin:'20px 24px',height: '48px'}" class="item-btn">Выбрать</div>
+                    <p class="popup-time timer">осталось 15 мин. 14 сек.</p>
                 </div>
             </div>
         </transition>
-<!--        <vue-ellipse-progress  :progress="currentTime ? currentTime : 0" line="round"  >-->
-<!--        </vue-ellipse-progress>-->
+
     </div>
 </template>
 
@@ -186,53 +204,92 @@
         name: "Landing",
         data:()=>({
             showPopup:true,
-            nav: null,
+            time:959,
+            timerId:null,
             videoProgress: null,
             videoPaused:true,
-            currentTime:null,
-            popupTime: null,
+            videoSwiper: null,
+            videoSliderData:[
+                {path:require('../public/video/1.mp4'),paused:true,curTime:null},
+                {path:require('../public/video/2.mp4'),paused:true,curTime:null},
+                {path:require('../public/video/3.mp4'),paused:true,curTime:null},
+                {path:require('../public/video/4.mp4'),paused:true,curTime:null},
+            ],
             items:[
                 {
                     title:'Kira Mayern',
-                    videosCount:500,photosCount:100,
-                    videos:[require('../public/img/slider/1.png'),require('../public/img/slider/2.png'),require('../public/img/slider/3.png')],
+                    videosCount:500,photosCount:742,
+                    photos:[require('../public/img/slider/1.png'),require('../public/img/slider/2.png'),require('../public/img/slider/3.png')],
+                    video:[require('../public/video/5.mp4')],
                 },{
                     title:'Constance Mayerovna',
-                    videosCount:500,photosCount:100,
-                    videos:[require('../public/img/slider/4.png'),require('../public/img/slider/5.png'),require('../public/img/slider/6.png')],
+                    videosCount:251,photosCount:612,
+                    photos:[require('../public/img/slider/4.png'),require('../public/img/slider/5.png'),require('../public/img/slider/6.png')],
+                    video:[require('../public/video/6.mp4')],
                 },{
                     title:'Kelly Warner',
-                    videosCount:512,photosCount:256,
-                    videos:[require('../public/img/slider/7.png'),require('../public/img/slider/8.png'),require('../public/img/slider/9.png')],
+                    videosCount:623,photosCount:256,
+                    photos:[require('../public/img/slider/7.png'),require('../public/img/slider/8.png'),require('../public/img/slider/9.png')],
+                    video:[require('../public/video/7.mp4')],
                 },{
                     title:'Carolyn Brooks',
-                    videosCount:512,photosCount:256,
-                    videos:[require('../public/img/slider/10.png'),require('../public/img/slider/11.png'),require('../public/img/slider/12.png')],
+                    videosCount:252,photosCount:125,
+                    photos:[require('../public/img/slider/10.png'),require('../public/img/slider/11.png'),require('../public/img/slider/12.png')],
+                    video:[require('../public/video/8.mp4')],
                 },{
                     title:'Nicholas Porter',
-                    videosCount:512,photosCount:256,
-                    videos:[require('../public/img/slider/13.png'),require('../public/img/slider/14.png'),require('../public/img/slider/15.png')],
+                    videosCount:345,photosCount:432,
+                    photos:[require('../public/img/slider/13.png'),require('../public/img/slider/14.png'),require('../public/img/slider/15.png')],
+                    video:[require('../public/video/9.mp4')],
                 },
                 ],
+            videoSwiperOptions: {
+                noSwiping:false,
+
+            },
             swiperOption: {
                 slidesPerView: 2,
                 spaceBetween: 30,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true
-                }
             }
         }),
         methods:{
-            videoController(){
-                let video = this.$refs.video;
-                console.log(video.duration)
-                console.log(video.currentTime)
-                this.videoPaused = video.paused
+            createTimer(){
+                if (this.time <= 0) this.time = 959;
+                let minutes = Math.floor(this.time/60);
+                let seconds = this.time % 60;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                minutes =  minutes === 0 ? '' : minutes+' мин.';
+                let timers = document.querySelectorAll('.timer');
+                timers.forEach((timer,index)=>{
+                    if (index === 0){
+                        timer.innerHTML = `${minutes} ${seconds} сек.`
+                    } else {
+                        timer.innerHTML = `осталось ${minutes} ${seconds} сек.`
+                    }
+                })
+                this.time -= 1;
+            },
+            videoSlideChange(){
+                this.videoSliderData = this.videoSliderData.map(video=>({...video,paused:true}))
+                let videos = document.querySelectorAll('.videoSlide');
+                videos.forEach(video=>{
+                    if (!video.paused) video.pause();
+                })
+            },
+            prevVideoSlide(){
+                this.videoSwiper.slidePrev();
+            },
+            nextVideoSlide(){
+                this.videoSwiper.slideNext();
+            },
+            videoController(index){
+                let video = document.querySelectorAll('.videoSlide')[index];
                 if (video.paused){
                     video.play();
+                    this.videoSliderData[index].paused = false;
                 } else {
                     video.pause();
+                    this.videoSliderData[index].paused = true;
                 }
             },
         },
@@ -244,16 +301,31 @@
               }
           }
         },
+        computed:{
+            isStart(){
+                return this.videoSwiper.isBeginning;
+            },
+            isEnd(){
+                return this.videoSwiper.isEnd;
+            },
+        },
         components: {
             Swiper,
             SwiperSlide,
         },
         mounted(){
-            document.body.style.overflow = 'hidden'
-            let video = document.getElementById("myVideo");
-            video.ontimeupdate = () => {
-                this.currentTime = +(video.currentTime/video.duration*100).toFixed()
-            }
+            document.body.style.overflow = 'hidden';
+            this.videoSwiper = document.querySelector('.videoSwiper').swiper;
+            this.timerId = setInterval(this.createTimer,1000);
+            let videos = document.querySelectorAll('.videoSlide')
+            videos.forEach((video,index)=>{
+                video.ontimeupdate = () => {
+                    this.videoSliderData[index].curTime = Math.floor(video.currentTime/video.duration*100)
+                };
+            })
+        },
+        beforeDestroy(){
+            clearInterval(this.timerId)
         },
         directives: {
             swiper: directive
@@ -294,6 +366,7 @@
     }
     body {
         font-family: "SF Pro Display";
+
     }
 </style>
 <style scoped>
@@ -360,7 +433,7 @@
         line-height: 150%;
         opacity: .5;
     }
-    .popup-timer {
+    .popup-time {
         text-align: center;
         font-weight: 600;
         font-size: 14px;
@@ -464,165 +537,201 @@
         border-radius: 10px;
         position: relative;
     }
-    .slider-img {
-        height: 100%;
-        width: 100%;
-        max-width: 100%;
+    .slider-item .blur {
         position: absolute;
-        object-fit: cover;
         left: 0;
         top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
         border-radius: 10px;
-    }
-    .item-name {
-        margin: 15px 0;
-        font-weight: 800;
-        font-size: 28px;
-        line-height: 150%;
-    }
-    .item-count{
-        display: flex;
-    }
-    .count-left, .count-right {
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 155%;
-        opacity: .5;
-    }
-    .count-left {
-        margin-right: 15px;
-    }
-    .item-btn {
-        margin: 15px 0 20px;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 55px;
-        background: rgba(55, 144, 245, 1);
-        color: #FFFFFF;
-        border-radius: 15px;
+        color: white;
     }
-    .item-btn-left {
-        margin-right: 10px;
-        font-weight: 800;
-        font-size: 15px;
-        line-height: 18px;
-        color: #FFFFFF;
-    }
-    .item-btn-right {
-        text-decoration: line-through;
-        font-size: 18px;
-        line-height: 21px;
-        color: #94C6FF;
-    }
-    .best-videos {}
-    .best-videos-title-wrapper {
-        display: flex;
-        align-items: center;
-        margin-bottom: 23px;
-    }
-    .best-videos-title {
-        font-weight: bold;
-        font-size: 22px;
-        line-height: 150%;
-    }
-    .best-videos-icon {
-        margin-right: 10px;
-    }
-    .video {
-        border-radius: 20px;
-        height: 590px;
-        margin-bottom: 70px;
-        position: relative;
-    }
-    .video video {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        object-fit: cover;
-        border-radius: 20px;
-        z-index: 0;
-    }
-    .video-layer {
-        position: absolute;
-        bottom: -20px;
-        width: 85%;
-        left: 50%;
-        transform: translateX(-50%);
-        height: 100%;
-        z-index: -1;
-    }
-    .video-layer.first {
-        background: #3790F5;
-        border-radius: 23px;
-    }
-    .video-layer.second {
-        background: rgba(55, 144, 245, 0.2);
-        border-radius: 25px;
-        bottom: -40px;
-        width: 70%;
-    }
-    .video-controllers {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        position: absolute;
-        bottom: 30px;
-    }
-    .video-btn.prev {
-        height: 40px;
-        width: 40px;
-        background: #060719;
-        border-radius: 30px;
-        margin: 0;
-    }
-    .video-btn {
-        height: 57px;
-        width: 57px;
-        background: #060719;
-        border-radius: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0 25px;
-    }
-    .video-btn.stop {
-    }
-    .video-btn.next {
-        height: 40px;
-        width: 40px;
-        background: #060719;
-        border-radius: 30px;
-        margin: 0;
-    }
-    .howToEarn {
+        .slider-img {
+            height: 100%;
+            width: 100%;
+            max-width: 100%;
+            position: absolute;
+            object-fit: cover;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+        }
+        .item-name {
+            margin: 15px 0;
+            font-weight: 800;
+            font-size: 28px;
+            line-height: 150%;
+        }
+        .item-count{
+            display: flex;
+        }
+        .count-left, .count-right {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 155%;
+            opacity: .5;
+        }
+        .count-left {
+            margin-right: 15px;
+        }
+        .item-btn {
+            margin: 15px 0 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 55px;
+            background: rgba(55, 144, 245, 1);
+            color: #FFFFFF;
+            border-radius: 15px;
+        }
+        .item-btn.blur {
 
-    }
-    .howToEarn-logo-wrapper {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    .howToEarn-title {
-        margin-left: 10px;
-        font-weight: bold;
-        font-size: 22px;
-        line-height: 150%;
-    }
-    .howToEarn-text {
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 155%;
-        opacity: .5;
-    }
-    .howToEarn-btn {
-        margin: 40px 0;
-    }
-   .fade-enter-active, .fade-leave-active {
-       transition: opacity .5s;
-   }
-   .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+        }
+        .item-btn-left {
+            margin-right: 10px;
+            font-weight: 800;
+            font-size: 15px;
+            line-height: 18px;
+            color: #FFFFFF;
+        }
+        .item-btn-right {
+            text-decoration: line-through;
+            font-size: 18px;
+            line-height: 21px;
+            color: #94C6FF;
+        }
+        .best-videos {}
+        .best-videos-title-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 23px;
+        }
+        .best-videos-title {
+            font-weight: bold;
+            font-size: 22px;
+            line-height: 150%;
+        }
+        .best-videos-icon {
+            margin-right: 10px;
+        }
+        .video {
+            border-radius: 20px;
+            height: 590px;
+            margin-bottom: 70px;
+            position: relative;
+        }
+        .video video {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            object-fit: cover;
+            border-radius: 20px;
+            z-index: 0;
+        }
+        .video-slide {
+            height: 590px;
+            position: relative;
+        }
+        .video-layer {
+            position: absolute;
+            bottom: -20px;
+            width: 85%;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%;
+            z-index: -1;
+        }
+        .video-layer.first {
+            background: #3790F5;
+            border-radius: 23px;
+        }
+        .video-layer.second {
+            background: rgba(55, 144, 245, 0.2);
+            border-radius: 25px;
+            bottom: -40px;
+            width: 70%;
+        }
+        .video-controllers {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            position: absolute;
+            bottom: 30px;
+            z-index: 2;
+        }
+        .video-btn.prev {
+            height: 40px;
+            width: 40px;
+            background: #060719;
+            border-radius: 30px;
+            margin: 0;
+            position: absolute;
+            left: 25%;
+        }
+        .video-btn {
+            height: 57px;
+            width: 57px;
+            background: #060719;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 25px;
+        }
+        .video-btn.stop {
+        }
+        .video-btn.next {
+            height: 40px;
+            width: 40px;
+            background: #060719;
+            border-radius: 30px;
+            margin: 0;
+            position: absolute;
+            right: 25%;
+        }
+        .howToEarn {
+
+        }
+        .howToEarn-logo-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .howToEarn-title {
+            margin-left: 10px;
+            font-weight: bold;
+            font-size: 22px;
+            line-height: 150%;
+        }
+        .howToEarn-text {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 155%;
+            opacity: .5;
+        }
+        .howToEarn-btn {
+            margin: 40px 0;
+        }
+       .fade-enter-active, .fade-leave-active {
+           transition: opacity .5s;
+       }
+       .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
        opacity: 0;
+   }
+
+   @media screen and (max-width: 350px) {
+       .video-btn.prev {
+           left: 10%;
+       }
+       .video-btn.next {
+            right: 10%;
+       }
    }
 </style>
