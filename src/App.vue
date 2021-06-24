@@ -50,6 +50,20 @@
                                 <img class="slider-img" :src="photo" alt="das">
                             </div>
                         </swiper-slide>
+                        <swiper-slide v-if="item.video">
+                            <div @click="modelsVideoController(index)" class="slider-item">
+                                <video class="modelsVideo"  :style="{width: `100%`,height: `100%`,position: `absolute`,objectFit: `cover`,borderRadius:'10px'}" muted preload="auto">
+                                    <source :src="item.video" type="video/mp4">
+                                </video>
+                                <div class="item-shadow" :style="{position:'absolute',left:'0',top:'0',right:'0',bottom:'0',background: `linear-gradient(180deg, rgba(0, 0, 0, 0) 54.69%, rgba(0, 0, 0, 0.8) 100%)`,borderRadius:'10px'}"></div>
+                                <div class="video-duration" :style="{position:'absolute',bottom:'20px',left:'15px',display:'flex',alignItems:'center'}">
+                                    <svg width="9" height="10" viewBox="0 0 9 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.6087 4.33242C9.13043 4.62912 9.13043 5.37088 8.6087 5.66758L1.17391 9.89558C0.652174 10.1923 -4.30455e-07 9.8214 -4.04447e-07 9.228L-3.38356e-08 0.772003C-7.82773e-09 0.1786 0.652174 -0.192277 1.17391 0.104424L8.6087 4.33242Z" fill="white"/>
+                                    </svg>
+                                    <p class="video-text" :style="{marginLeft:'8px'}"></p>
+                                </div>
+                            </div>
+                        </swiper-slide>
                         <swiper-slide >
                             <div class="slider-item" @click="showPopup = true">
                                 <img class="slider-img" :src="item.photos[0]" alt="das">
@@ -67,6 +81,7 @@
                                 </div>
                             </div>
                         </swiper-slide>
+
                     </swiper>
                     <p class="item-name">{{item.title}}</p>
                     <div class="item-count">
@@ -96,7 +111,7 @@
                 <div class="video">
                     <swiper @slideChange="videoSlideChange" :options="videoSwiperOptions" class="videoSwiper" ref="videoSwiper" :style="{overflow:'hidden',borderRadius: '20px'}" >
                         <swiper-slide v-for="(videoSlide,index) of videoSliderData" :key="index" class="video-slide">
-                            <video :ref="`video-`+index" class="videoSlide" :src="videoSlide.path" muted loop>
+                            <video class="videoSlide" :src="videoSlide.path" muted loop preload="auto">
                                 <source src="../public/video/ocean.mp4" type="video/mp4">
                             </video>
                         </swiper-slide>
@@ -164,7 +179,9 @@
                 </div>
                 <p class="howToEarn-text">Начните зарабатывать от 100 000 рублей в</p>
                 <p class="howToEarn-text">месяц прямо сейчас</p>
-                <div class="howToEarn-btn item-btn item-btn-left">Как зарабатывать в FriendsOnly?</div>
+                <div class="howToEarn-btn item-btn item-btn-left">
+                    <a href="https://dev.friendsonly.me/howToEarn">Как зарабатывать в FriendsOnly?</a>
+                </div>
             </div>
         </div>
         <transition name="fade">
@@ -338,11 +355,10 @@
                 ],
             videoSwiperOptions: {
                 noSwiping:false,
-
             },
             swiperOption: {
                 slidesPerView: 2,
-                spaceBetween: 30,
+                spaceBetween: 10,
             }
         }),
         methods:{
@@ -374,6 +390,10 @@
             },
             nextVideoSlide(){
                 this.videoSwiper.slideNext();
+            },
+            modelsVideoController(index){
+                let video = document.querySelectorAll('.modelsVideo')[index];
+                video.requestFullscreen();
             },
             videoController(index){
                 let video = document.querySelectorAll('.videoSlide')[index];
@@ -419,6 +439,18 @@
                     this.videoSliderData[index].curTime = Math.floor(video.currentTime/video.duration*100)
                 };
             })
+            let modelsVideos = document.querySelectorAll('.modelsVideo');
+            let modelsText = document.querySelectorAll('.video-text');
+            modelsVideos.forEach((video,index)=>{
+                let intervalId = setInterval(function() {
+                    if (video.readyState > 0) {
+                        let seconds = video.duration;
+                        modelsText[index].innerHTML = `00:${Math.floor(seconds)}`;
+                        clearInterval(intervalId);
+                    }
+                }, 200);
+                // modelsText[index].innerHTML = video.duration
+            })
         },
         beforeDestroy(){
             clearInterval(this.timerId)
@@ -463,6 +495,10 @@
     body {
         font-family: "SF Pro Display";
 
+    }
+    a {
+        text-decoration: none;
+        color: #FFFFFF;
     }
 </style>
 <style scoped>
@@ -690,7 +726,7 @@
             border-radius: 10px;
         }
         .item-name {
-            margin: 15px 0;
+            margin: 30px 0 20px;
             font-weight: 800;
             font-size: 28px;
             line-height: 150%;
@@ -708,7 +744,7 @@
             margin-right: 15px;
         }
         .item-btn {
-            margin: 15px 0 20px;
+            margin: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -761,6 +797,12 @@
             border-radius: 20px;
             z-index: 0;
         }
+        .video-text {
+            font-weight: 800;
+            font-size: 14px;
+            line-height: 17px;
+            color: #FFFFFF;
+        }
         .video-slide {
             height: 590px;
             position: relative;
@@ -800,7 +842,7 @@
             border-radius: 30px;
             margin: 0;
             position: absolute;
-            left: 25%;
+            left: 17%;
         }
         .video-btn {
             height: 57px;
@@ -821,7 +863,7 @@
             border-radius: 30px;
             margin: 0;
             position: absolute;
-            right: 25%;
+            right: 17%;
         }
         .howToEarn {
 
