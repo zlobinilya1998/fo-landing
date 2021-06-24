@@ -470,31 +470,30 @@
     }
     @font-face {
         font-family: 'SF Pro Display';
-        src: url(/public/fonts/SFProDisplay-Regular.woff);
+        src: url(../public/fonts/SFProDisplay-Regular.woff);
         font-weight: 400;
         font-display: swap;
     }
     @font-face {
         font-family: 'SF Pro Rounded';
-        src: url(/public/fonts/SFProRounded-Regular.woff);
+        src: url(../public/fonts/SFProRounded-Regular.woff);
         font-weight: 400;
         font-display: swap;
     }
     @font-face {
         font-family: 'SF Pro Display';
-        src: url(/public/fonts/SFProDisplay-Bold.woff);
+        src: url(../public/fonts/SFProDisplay-Bold.woff);
         font-weight: 600;
         font-display: swap;
     }
     @font-face {
         font-family: 'SF Pro Display';
-        src: url(/public/fonts/SFProDisplay-Semibold.woff);
+        src: url(../public/fonts/SFProDisplay-Semibold.woff);
         font-weight: 500;
         font-display: swap;
     }
     body {
         font-family: "SF Pro Display";
-
     }
     a {
         text-decoration: none;
@@ -726,7 +725,7 @@
             border-radius: 10px;
         }
         .item-name {
-            margin: 30px 0 20px;
+            margin: 20px 0 10px;
             font-weight: 800;
             font-size: 28px;
             line-height: 150%;
@@ -744,7 +743,7 @@
             margin-right: 15px;
         }
         .item-btn {
-            margin: 20px 0;
+            margin: 15px 0 20px;
             display: flex;
             justify-content: center;
             align-items: center;
