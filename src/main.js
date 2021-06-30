@@ -4,6 +4,7 @@ import VueEllipseProgress from 'vue-ellipse-progress';
 
 Vue.use(VueEllipseProgress);
 
+
 Vue.config.productionTip = false
 new Vue({
   render: h => h(App),

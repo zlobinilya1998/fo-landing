@@ -22,7 +22,7 @@
                     </svg>
                     <p class="logo-text">FRIENDSONLY</p>
                 </div>
-                <div class="login-btn">Войти</div>
+                <div v-if="!user" class="login-btn" @click="openPopUp('login')">Войти</div>
             </div>
         </div>
         <div class="container">
@@ -44,7 +44,7 @@
             </div>
             <div class="item-wrapper">
                 <div v-for="(item,index) in items" :key="index" class="item">
-                    <swiper ref="mySwiper" :options="swiperOption">
+                    <swiper ref="mySwiper" :options="swiperOption" >
                         <swiper-slide v-for="(photo,index) in item.photos" :key="index">
                             <div class="slider-item">
                                 <img class="slider-img" :src="photo" alt="das">
@@ -64,31 +64,30 @@
                                 </div>
                             </div>
                         </swiper-slide>
-                        <swiper-slide >
+                        <swiper-slide>
                             <div class="slider-item" @click="showPopup = true">
                                 <img class="slider-img" :src="item.photos[0]" alt="das">
                                 <div class="blur">
-                                    <div class="item-btn" :style="{margin:'auto',width:'106px',height:'36px',fontSize:'10px',fontWeight:'600',borderRadius:'8px'}">Открыть доступ</div>
+                                    <div class="item-btn" :style="{margin:'auto',width:'106px',height:'36px',fontSize:'10px',fontWeight:'600',borderRadius:'8px'}" @click="user ? selectModel(item.photos[0]) : openPopUp('login')">Открыть доступ</div>
                                 </div>
                             </div>
                         </swiper-slide>
                         <swiper-slide>
-                            <div class="slider-item" @click="showPopup = true">
+                            <div class="slider-item" @click="user ? selectModel(item.photos[0]) : openPopUp('login')">
                                 <img class="slider-img" :src="item.photos[1]" alt="das">
                                 <div class="blur" :style="{background: `rgba(0, 0, 0, 0.8)`,flexDirection:'column'}">
-                                    <p :style="{fontSize: '40px',lineHeight:'48px',fontWeight: 'bold'}">+56</p>
+                                    <p :style="{fontSize: '40px',lineHeight:'48px',fontWeight: 'bold'}">+{{item.photosCount-3}}</p>
                                     <p :style="{fontSize: '15px',lineHeight:'18px',fontWeight: '500'}">фото</p>
                                 </div>
                             </div>
                         </swiper-slide>
-
                     </swiper>
                     <p class="item-name">{{item.title}}</p>
                     <div class="item-count">
                         <p class="count-left">{{item.videosCount}} видео</p>
                         <p class="count-right">{{item.photosCount}} фото</p>
                     </div>
-                    <div class="item-btn">
+                    <div class="item-btn" @click="selectModel(item.photos[0])">
                         <p class="item-btn-left">Получить доступ за  1 ₽ </p>
                         <p class="item-btn-right">500 ₽</p>
                     </div>
@@ -184,9 +183,9 @@
                 </div>
             </div>
         </div>
-        <transition name="fade">
-            <div v-if="modalShow" class="popup-wrapper" @click="modalShow = false">
-                <div class="popup">
+        <transition-group name="fade">
+            <div key="first" v-if="modalShow" class="popup-wrapper" @click="closePopUp">
+                <div class="popup" :style="{padding:popUpPadding}">
                     <div v-if="modalType === 'newUsers'">
                         <div class="img-wrapper">
                             <div class="img-wrapper-item">
@@ -208,12 +207,12 @@
                         <p class="popup-title">Для новых пользователей</p>
                         <p class="popup-text">Подписка на одну из этих 5</p>
                         <p class="popup-text">ТОП-моделей всего за 1 ₽ вместо  <span :style="{textDecoration:'line-through'}">500 ₽</span></p>
-                        <div :style="{margin:'20px 24px',height: '48px'}" class="item-btn">Выбрать</div>
+                        <div :style="{margin:'20px 24px',height: '48px'}" class="item-btn" @click="closePopUp($event,true)">Выбрать</div>
                         <p class="popup-time timer">осталось 15 мин. 14 сек.</p>
                     </div>
                     <div v-else-if="modalType === 'makeFriends'" class="makeFriends" :style="{width:'185px',margin:'0 auto'}">
                         <div :style="{position:'relative',width:'87px',height:'87px',margin:'0 auto'}">
-                            <img :style="{width:'100%',maxWidth:'100%',position:'absolute',top:'0',left:'0'}" src="../public/img/popup/1.png" alt="">
+                            <img :style="{width:'100%',maxWidth:'100%',maxHeight:'100%',borderRadius:'50%',objectFit: 'cover',position:'absolute',top:'0',left:'0'}" :src="friendsModalPhoto ? friendsModalPhoto : require('../public/img/popup/1.png')" alt="img">
                             <svg :style="{position:'absolute',right:'0px',bottom:'0px'}" width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12.7411 0.884443C13.1402 0.41937 13.8598 0.419369 14.2589 0.884442L16.9414 4.01068C17.1488 4.25238 17.4589 4.38084 17.7765 4.35658L21.8839 4.04282C22.4949 3.99615 23.0039 4.50505 22.9572 5.11608L22.6434 9.22349C22.6192 9.54105 22.7476 9.85118 22.9893 10.0586L26.1156 12.7411C26.5806 13.1402 26.5806 13.8598 26.1156 14.2589L22.9893 16.9414C22.7476 17.1488 22.6192 17.4589 22.6434 17.7765L22.9572 21.8839C23.0039 22.4949 22.495 23.0039 21.8839 22.9572L17.7765 22.6434C17.4589 22.6192 17.1488 22.7476 16.9414 22.9893L14.2589 26.1156C13.8598 26.5806 13.1402 26.5806 12.7411 26.1156L10.0586 22.9893C9.85118 22.7476 9.54105 22.6192 9.22349 22.6434L5.11609 22.9572C4.50505 23.0039 3.99615 22.495 4.04282 21.8839L4.35658 17.7765C4.38084 17.4589 4.25238 17.1488 4.01068 16.9414L0.884443 14.2589C0.41937 13.8598 0.419369 13.1402 0.884442 12.7411L4.01068 10.0586C4.25238 9.85118 4.38084 9.54105 4.35658 9.22349L4.04282 5.11609C3.99615 4.50505 4.50505 3.99615 5.11608 4.04282L9.22349 4.35658C9.54105 4.38084 9.85118 4.25238 10.0586 4.01068L12.7411 0.884443Z" fill="#3790F5"/>
                                 <g clip-path="url(#clipDASVDASVDASEDCQWEVWQEWQCEwecacsda)">
@@ -228,92 +227,42 @@
                         </div>
                         <p class="popup-title">1 ₽ </p>
                         <p class="popup-text">через 3 дня 499₽/месяц</p>
-                        <div class="item-btn" :style="{marginTop:'25px'}">Подружиться</div>
+                        <div class="item-btn" :style="{marginTop:'25px'}" @click="user ? subscribeOnModel() : openPopUp('login')">Подружиться</div>
                         <p class="popup-text">Будет списан 1 рубль для подтверждения </p>
                     </div>
-                    <div v-else-if="modalType === 'registration'" class="registartion">
-                        <p class="popup-title" :style="{margin:'0 0 25px'}">Регистрация</p>
-                        <div class="btn-wrapper">
-                            <div class="popup-btn registration">
-                                <svg class="popup-registration-icon"  width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clip-path="url(#clipDASVDWQCEQWdsadaca)">
-                                        <path d="M15.672 0.00234248C12.5487 -0.0536575 8.98667 1.57901 6.732 4.11168C4.57734 4.15234 2.47934 5.03568 0.934673 6.58034C0.844673 6.66901 0.812673 6.80168 0.852006 6.92168C0.892006 7.04234 0.996006 7.12968 1.12134 7.14768L3.69067 7.51568L3.37334 7.87101C3.25534 8.00301 3.26134 8.20368 3.38667 8.32901L7.67134 12.6137C7.736 12.6783 7.82133 12.711 7.90733 12.711C7.98667 12.711 8.066 12.683 8.12933 12.6263L8.48467 12.309L8.85267 14.8783C8.87067 15.0037 8.96933 15.0957 9.08867 15.1357C9.11933 15.1457 9.15133 15.1503 9.184 15.1503C9.27867 15.1503 9.37533 15.109 9.442 15.043C10.9653 13.5197 11.8487 11.4217 11.8893 9.26701C14.4247 7.00768 16.0707 3.44701 15.998 0.327676C15.9933 0.150342 15.85 0.00700914 15.672 0.00234248ZM12.6 5.75701C12.2753 6.08168 11.8487 6.24434 11.4213 6.24434C10.994 6.24434 10.5673 6.08168 10.2427 5.75701C9.59333 5.10701 9.59333 4.04968 10.2427 3.39968C10.8927 2.74968 11.95 2.74968 12.6 3.39968C13.25 4.04968 13.25 5.10768 12.6 5.75701Z" fill="white"/>
-                                        <path d="M1.81604 11.2701C1.1027 11.9834 0.123372 15.2061 0.0140383 15.5707C-0.0212951 15.6881 0.0113716 15.8154 0.0973716 15.9021C0.161372 15.9661 0.246038 16.0001 0.333372 16.0001C0.365372 16.0001 0.397372 15.9954 0.429372 15.9861C0.794038 15.8767 4.0167 14.8974 4.73004 14.1841C5.53337 13.3807 5.53337 12.0734 4.73004 11.2701C3.92604 10.4667 2.61937 10.4674 1.81604 11.2701Z" fill="white"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clipDASVDWQCEQWdsadaca">
-                                            <rect width="16" height="16" fill="white"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                <p :stule="{flex:'1'}">в 1 клик</p>
-                            </div>
-                            <div class="popup-btn facebook">
-                                <svg class="popup-registration-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clip-path="url(#clipVDASCDASdqw123wevwqx)">
-                                        <path d="M10.665 2.65667H12.1257V0.112667C11.8737 0.078 11.007 0 9.99767 0C7.89167 0 6.449 1.32467 6.449 3.75933V6H4.125V8.844H6.449V16H9.29833V8.84467H11.5283L11.8823 6.00067H9.29767V4.04133C9.29833 3.21933 9.51967 2.65667 10.665 2.65667Z" fill="white"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clipVDASCDASdqw123wevwqx">
-                                            <rect width="16" height="16" fill="white"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                <p>через Facebook</p>
-                            </div>
-                            <div class="popup-btn telegram">
-                                <svg class="popup-registration-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.09992 7.51756C5.39488 5.63592 8.25885 4.39543 9.69185 3.79608C13.7834 2.08483 14.6335 1.78757 15.1877 1.77775C15.3095 1.77559 15.5821 1.80597 15.7586 1.95C15.9076 2.07161 15.9486 2.2359 15.9683 2.3512C15.9879 2.4665 16.0123 2.72917 15.9929 2.93441C15.7712 5.27698 14.8118 10.9618 14.3237 13.5855C14.1172 14.6957 13.7105 15.0679 13.3169 15.1044C12.4613 15.1835 11.8116 14.5358 10.9829 13.9896C9.68624 13.1349 8.9537 12.6028 7.69503 11.7688C6.24043 10.8049 7.18338 10.2751 8.01236 9.40931C8.22931 9.18273 11.999 5.73488 12.0719 5.4221C12.0811 5.38299 12.0895 5.23717 12.0034 5.16018C11.9172 5.08319 11.7901 5.10952 11.6983 5.13046C11.5683 5.16014 9.4968 6.53692 5.48389 9.2608C4.89591 9.66679 4.36333 9.86461 3.88616 9.85424C3.36012 9.84282 2.34822 9.55516 1.59598 9.30928C0.673328 9.00769 -0.0599784 8.84824 0.00387615 8.33606C0.0371355 8.06928 0.402482 7.79645 1.09992 7.51756Z" fill="white"/>
-                                </svg>
-                                <p>через Telegram</p>
-                            </div>
-                            <div class="popup-btn email">
-                                <svg class="popup-registration-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clip-path="url(#clipdasvdcaskmdoijmoik123)">
-                                        <path d="M15.8593 3.17853L11.0068 7.99975L15.8593 12.821C15.947 12.6376 16.0002 12.4349 16.0002 12.2185V3.781C16.0002 3.56453 15.947 3.36187 15.8593 3.17853Z" fill="white"/>
-                                        <path d="M14.5937 2.375H1.40618C1.18971 2.375 0.987055 2.42822 0.803711 2.51594L7.00568 8.68667C7.55406 9.23504 8.44581 9.23504 8.99418 8.68667L15.1961 2.51594C15.0128 2.42822 14.8102 2.375 14.5937 2.375Z" fill="white"/>
-                                        <path d="M0.140937 3.17853C0.0532188 3.36187 0 3.56453 0 3.781V12.2185C0 12.435 0.0532188 12.6377 0.140937 12.821L4.99341 7.99975L0.140937 3.17853Z" fill="white"/>
-                                        <path d="M10.3437 8.66306L9.65702 9.34971C8.74331 10.2634 7.25652 10.2634 6.34281 9.34971L5.65618 8.66306L0.803711 13.4843C0.987055 13.572 1.18971 13.6252 1.40618 13.6252H14.5937C14.8102 13.6252 15.0128 13.572 15.1961 13.4843L10.3437 8.66306Z" fill="white"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clipdasvdcaskmdoijmoik123">
-                                            <rect width="16" height="16" fill="white"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                <p>через Email</p>
-                            </div>
-                            <div class="popup-btn phone">
-                                <svg class="popup-registration-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g clip-path="url(#clipdvasdwqeqwe1214r512r)">
-                                        <path d="M15.5643 11.7424L13.3315 9.50954C12.534 8.71209 11.1784 9.0311 10.8594 10.0678C10.6202 10.7855 9.82271 11.1842 9.10501 11.0247C7.51012 10.626 5.35702 8.5526 4.9583 6.87797C4.71906 6.16024 5.19753 5.36279 5.91523 5.12359C6.95191 4.80461 7.27089 3.44895 6.47344 2.65151L4.2406 0.418659C3.60264 -0.139553 2.64571 -0.139553 2.08749 0.418659L0.572347 1.93381C-0.9428 3.5287 0.731836 7.75516 4.47983 11.5032C8.22782 15.2511 12.4543 17.0056 14.0492 15.4106L15.5643 13.8955C16.1226 13.2575 16.1226 12.3006 15.5643 11.7424Z" fill="white"/>
-                                    </g>
-                                    <defs>
-                                        <clipPath id="clipdvasdwqeqwe1214r512r">
-                                            <rect width="16" height="16" fill="white"/>
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-                                <p>по телефону</p>
-                            </div>
-                        </div>
-                    </div>
+                    <Register @setUser="setUser" @setLoginKey="setLoginKey"  @setLoading="setLoading" @login="showLoginModal" @closeModal="closeModal"  @showNotification="openNotification" v-else-if="modalType === 'registration'"/>
+                    <Login @setLoading="setLoading" @register="showRegisterModal" @closeModal="closeModal" @showNotification="openNotification" v-else-if="modalType === 'login'"/>
                 </div>
             </div>
-        </transition>
-
+            <div key="second" class="notification" v-if="showNotification">
+                <p class="active">{{notificationText}}</p>
+            </div>
+            <div key="third" v-if="loading" class="loading">
+                <svg width="67" height="67" viewBox="0 0 67 67" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="33.5" cy="33.5" r="28.5" stroke="#F0F0F0" stroke-width="10"/>
+                    <path d="M34 67C36.7614 67 39 64.7614 39 62C39 59.2386 36.7614 57 34 57V67ZM34 10C36.7614 10 39 7.76142 39 5C39 2.23858 36.7614 0 34 0V10ZM34 57C20.6628 57 10 46.3971 10 33.5H0C0 52.0832 15.3047 67 34 67V57ZM10 33.5C10 20.6029 20.6628 10 34 10V0C15.3047 0 0 14.9168 0 33.5H10Z" fill="#E2E2E2"/>
+                </svg>
+            </div>
+        </transition-group>
     </div>
 </template>
 
 <script>
     import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
     import 'swiper/swiper-bundle.css'
-
+    const Register = () => import('./components/Register')
+    const Login = () => import('./components/Login')
     const Landing = {
         name: "Landing",
         data:()=>({
+            user: null,
+            showNotification:false,
+            notificationText:'',
+            loading:false,
             modalShow:true,
-            modalType:'registration',
+            modalType:'newUsers',
+            friendsModalPhoto: null,
+            popUpPadding:'20px 15px 25px',
             time:959,
             timerId:null,
             videoProgress: null,
@@ -331,37 +280,92 @@
                     videosCount:500,photosCount:742,
                     photos:[require('../public/img/slider/1.png'),require('../public/img/slider/2.png'),require('../public/img/slider/3.png')],
                     video:[require('../public/video/5.mp4')],
+                    id:0,
                 },{
                     title:'Constance Mayerovna',
                     videosCount:251,photosCount:612,
                     photos:[require('../public/img/slider/4.png'),require('../public/img/slider/5.png'),require('../public/img/slider/6.png')],
                     video:[require('../public/video/6.mp4')],
+                    id:0,
                 },{
                     title:'Kelly Warner',
                     videosCount:623,photosCount:256,
                     photos:[require('../public/img/slider/7.png'),require('../public/img/slider/8.png'),require('../public/img/slider/9.png')],
                     video:[require('../public/video/7.mp4')],
+                    id:0,
                 },{
                     title:'Carolyn Brooks',
                     videosCount:252,photosCount:125,
                     photos:[require('../public/img/slider/10.png'),require('../public/img/slider/11.png'),require('../public/img/slider/12.png')],
                     video:[require('../public/video/8.mp4')],
+                    id:0,
                 },{
                     title:'Nicholas Porter',
                     videosCount:345,photosCount:432,
                     photos:[require('../public/img/slider/13.png'),require('../public/img/slider/14.png'),require('../public/img/slider/15.png')],
                     video:[require('../public/video/9.mp4')],
+                    id:0,
                 },
                 ],
             videoSwiperOptions: {
                 noSwiping:false,
             },
             swiperOption: {
-                slidesPerView: 2,
+                slidesPerView: 'auto',
                 spaceBetween: 10,
             }
         }),
         methods:{
+            subscribeOnModel(id){
+                document.location.replace(`https://friendsonly.me/auth_redirect/token/${this.user.token}?link=/yakassa/card/follow/bank_card/${id}`)
+            },
+            setUser(user){
+                this.user = user;
+            },
+            setLoading(flag){
+                if (flag) this.loading = flag;
+                else this.loading = flag;
+            },
+            setLoginKey(){
+                this.loginKey++
+            },
+            openNotification(text){
+                this.notificationText = text;
+                this.showNotification = true;
+                setTimeout(()=>{
+                    this.closeNotification();
+                },3000)
+            },
+            closeNotification(){
+              this.showNotification = false;
+            },
+            selectModel(photo){
+                this.friendsModalPhoto = photo;
+                this.openPopUp('makeFriends');
+            },
+            openPopUp(type){
+                this.modalShow = true;
+                this.modalType = type;
+            },
+            closeModal(){
+                this.modalShow = false;
+                this.modalType = ''
+            },
+            closePopUp(e,close = false){
+                if (e.target.classList.contains('popup-wrapper')){
+                    this.modalShow = false;
+                    this.modalType = ''
+                } else if (close === true){
+                    this.modalShow = false;
+                    this.modalType = ''
+                }
+            },
+            showLoginModal(){
+                this.modalType = 'login';
+            },
+            showRegisterModal(){
+                this.modalType = 'registration'
+            },
             createTimer(){
                 if (this.time <= 0) this.time = 959;
                 let minutes = Math.floor(this.time/60);
@@ -407,12 +411,22 @@
             },
         },
         watch:{
-          modalShow(newVal){
-              if (newVal) document.body.style.overflow = 'hidden'
-              else {
-                  document.body.style.overflow = 'scroll'
-              }
-          }
+            user(newVal){
+                console.log('newVal',newVal)
+                if (newVal) this.$forceUpdate();
+            },
+            modalShow(newVal){
+                if (newVal === true) document.body.style.overflow = 'hidden'
+                else {
+                document.body.style.overflow = 'scroll'
+                }
+            },
+            loading(newVal){
+                if (newVal === true) document.body.style.overflow = 'hidden';
+                else if (newVal === false) {
+                    document.body.style.overflow = ''
+                }
+            },
         },
         computed:{
             isStart(){
@@ -426,11 +440,13 @@
             }
         },
         components: {
+            Register,
+            Login,
             Swiper,
             SwiperSlide,
         },
         mounted(){
-            document.body.style.overflow = 'hidden';
+            this.user = JSON.parse(localStorage.getItem('user')) || null;
             this.videoSwiper = document.querySelector('.videoSwiper').swiper;
             this.timerId = setInterval(this.createTimer,1000);
             let videos = document.querySelectorAll('.videoSlide')
@@ -449,7 +465,6 @@
                         clearInterval(intervalId);
                     }
                 }, 200);
-                // modelsText[index].innerHTML = video.duration
             })
         },
         beforeDestroy(){
@@ -499,6 +514,9 @@
         text-decoration: none;
         color: #FFFFFF;
     }
+    body::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 <style scoped>
    .swiper-container {
@@ -527,8 +545,7 @@
         width: 285px;
         background: #FFFFFF;
         border-radius: 20px;
-        padding: 40px 12px 25px;
-        min-height: 360px;
+        transition: .2s;
     }
     .img-wrapper {
         display: flex;
@@ -772,7 +789,7 @@
         .best-videos-title-wrapper {
             display: flex;
             align-items: center;
-            margin-bottom: 23px;
+            margin: 10px 0 23px;
         }
         .best-videos-title {
             font-weight: bold;
@@ -891,9 +908,73 @@
            transition: opacity .5s;
        }
        .fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
-       opacity: 0;
+           opacity: 0;
+       }
+       .swiper-slide {
+           width:145px;
+       }
+   .notification{
+       position: fixed;
+       z-index: 500;
+       left: 0;
+       right: 0;
+       top: 30px;
+       width: 100%;
+       min-height: 40px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
    }
-
+   .notification p{
+       width: 100%;
+       min-height: 40px;
+       padding-top: 10px;
+       padding-bottom: 10px;
+       max-width: 320px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       background: rgba(0, 0, 0, 0.65);
+       backdrop-filter: blur(15px);
+       -webkit-backdrop-filter: blur(15px);
+       border-radius: 8px;
+       font-family: SF Pro Display;
+       font-style: normal;
+       font-weight: 500;
+       font-size: 14px;
+       line-height: 17px;
+       text-align: center;
+       color: #FFFFFF;
+       opacity: 0;
+       transition: .3s;
+   }
+   .notification p.active{
+       opacity: 1;
+   }
+   .loading {
+       position: fixed;
+       left: 0;
+       top: 0;
+       right: 0;
+       bottom: 0;
+       background: rgba(0, 0, 0, 0.6);
+       backdrop-filter: blur(30px);
+       z-index: 50;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+   }
+    .loading svg {
+        animation: rotate linear 2s infinite;
+    }
+   @keyframes rotate {
+       0% {
+           transform: rotate(0);
+       }
+       100% {
+           transform: rotate(360deg);
+       }
+   }
    @media screen and (max-width: 350px) {
        .video-btn.prev {
            left: 10%;
