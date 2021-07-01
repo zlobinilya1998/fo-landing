@@ -259,8 +259,8 @@
             showNotification:false,
             notificationText:'',
             loading:false,
-            modalShow:true,
-            modalType:'newUsers',
+            modalShow:false,
+            modalType:'',
             friendsModalPhoto: null,
             popUpPadding:'20px 15px 25px',
             time:959,
@@ -446,6 +446,10 @@
             SwiperSlide,
         },
         mounted(){
+            setTimeout(()=>{
+                this.modalShow = true;
+                this.modalType = 'newUsers';
+            },4500)
             this.user = JSON.parse(localStorage.getItem('user')) || null;
             this.videoSwiper = document.querySelector('.videoSwiper').swiper;
             this.timerId = setInterval(this.createTimer,1000);
